@@ -131,15 +131,10 @@ let chartInst = null, map, geoLayer, geoData;
 
 // GeoJSON 시도명 → 우리 데이터 시도명 매핑
 const SIDO_MAP = {
-  '강원도':'강원특별자치도','강원특별자치도':'강원특별자치도',
-  '경기도':'경기도','경상남도':'경상남도','경상북도':'경상북도',
-  '광주광역시':'광주광역시','대구광역시':'대구광역시','대전광역시':'대전광역시',
-  '부산광역시':'부산광역시','서울특별시':'서울특별시',
-  '세종특별자치시':'세종특별자치시','세종시':'세종특별자치시',
-  '울산광역시':'울산광역시','인천광역시':'인천광역시',
-  '전라남도':'전라남도','전라북도':'전북특별자치도','전북특별자치도':'전북특별자치도',
-  '제주특별자치도':'제주특별자치도','제주도':'제주특별자치도',
-  '충청남도':'충청남도','충청북도':'충청북도',
+  '강원도':'강원특별자치도',
+  '전라북도':'전북특별자치도',
+  '세종시':'세종특별자치시',
+  '제주도':'제주특별자치도',
 };
 
 function getData() {
@@ -170,7 +165,7 @@ async function initMap() {
     .setView([36.5, 127.8], 6);
   L.tileLayer('https://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}{r}.png', {maxZoom:18}).addTo(map);
 
-  const res = await fetch('https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2012/json/skorea-provinces-2012-simple.json');
+  const res = await fetch('https://raw.githubusercontent.com/southkorea/southkorea-maps/master/kostat/2012/json/provinces-geo-simple.json');
   geoData = await res.json();
 
   // 범례
@@ -208,7 +203,7 @@ function renderMap() {
   if (geoLayer) geoLayer.remove();
   geoLayer = L.geoJSON(geoData, {
     style: feat => {
-      const gname = feat.properties.CTP_KOR_NM || feat.properties.name || '';
+      const gname = feat.properties.name || '';
       const sido = SIDO_MAP[gname] || gname;
       const count = totals[sido] || 0;
       const isActive = activeSido && activeSido === sido;
@@ -220,7 +215,7 @@ function renderMap() {
       };
     },
     onEachFeature: (feat, layer) => {
-      const gname = feat.properties.CTP_KOR_NM || feat.properties.name || '';
+      const gname = feat.properties.name || '';
       const sido = SIDO_MAP[gname] || gname;
       const count = totals[sido] || 0;
       layer.bindTooltip(
